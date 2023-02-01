@@ -103,7 +103,11 @@ export const createConnector = ({
     });
     startConnectionTimer();
     const { walletAppId } = getState();
-    if (walletAppId) sendWalletEvent(walletAppId, WALLET_APP_EVENTS.CONNECT);
+    if (walletAppId)
+      sendWalletEvent(walletAppId, WALLET_APP_EVENTS.CONNECT, {
+        address,
+        walletInfo,
+      } as any);
   });
   // ------------------------
   // DISCONNECT EVENT

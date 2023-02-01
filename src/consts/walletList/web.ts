@@ -28,18 +28,21 @@ export const webFigure = {
   },
 } as Wallet;
 
+let windowRef: Window | null;
+
 export const webFigureTest = {
   dev: true,
   id: 'figure_web_test',
   type: ['web', 'mobile'],
   title: 'Figure Web (Test)',
   icon: 'figure',
-  eventAction: ({ uri, address, event }) => {
+  eventAction: ({ uri, address, event, data, redirectUrl }) => {
     // Build a full set of urlSearchParams to append to the url
     const searchParams = new URLSearchParams();
     if (uri) searchParams.append('wc', uri);
     if (address) searchParams.append('address', address);
     if (event) searchParams.append('event', event);
+    if (redirectUrl) searchParams.append('redirectUrl', redirectUrl);
     const searchParamsString = searchParams.toString();
     const url = `${FIGURE_WEB_WALLET_TEST_URL}${
       searchParamsString ? `?${searchParamsString}` : ''
@@ -50,8 +53,14 @@ export const webFigureTest = {
     const left = window.outerWidth / 2 + window.screenX - width / 2;
     const windowOptions = `popup=1 height=${height} width=${width} top=${top} left=${left} resizable=1, scrollbars=1, fullscreen=0, toolbar=0, menubar=0, status=1`;
     // Redirect to Figure Connect page in new tab for connection requests
-    if (event === 'walletconnect_init') window.open(url);
+    if (event === 'walletconnect_init') windowRef = window.open(url);
     else if (event !== 'walletconnect_connect')
-      window.open(url, undefined, windowOptions);
+      windowRef = window.open(url, undefined, windowOptions);
+
+    console.log('windowRef', windowRef);
+    if (data) {
+      console.log('dispatching', data);
+      windowRef?.postMessage({ type: 'figureWebWalletSendMessage', data }, '*');
+    }
   },
 } as Wallet;
