@@ -59,10 +59,6 @@ export const webFigureTest = {
     )
       windowRef = window.open(url, undefined, windowOptions);
 
-    if (data) {
-      windowRef?.postMessage({ type: 'figureWebWalletSendMessage', data }, '*');
-    }
-
     // Wait for wcjs to set walletconnect in storage and post back to figure connect page
     setTimeout(() => {
       if (window.localStorage.getItem('walletconnect'))
@@ -70,6 +66,7 @@ export const webFigureTest = {
           {
             type: 'figureWebWalletSendMessage',
             walletconnect: window.localStorage.getItem('walletconnect'),
+            data,
           },
           '*'
         );
