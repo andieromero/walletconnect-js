@@ -83,6 +83,7 @@ export const createConnector = ({
       representedGroupPolicy,
       walletInfo,
     } = getAccountInfo(accounts);
+    console.log('createConnect.onConnect() called');
     setState({
       address,
       connectionEST,
@@ -107,6 +108,7 @@ export const createConnector = ({
       sendWalletEvent(walletAppId, WALLET_APP_EVENTS.CONNECT, {
         address,
         walletInfo,
+        signedJWT,
       } as any);
   });
   // ------------------------
