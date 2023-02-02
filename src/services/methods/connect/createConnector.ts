@@ -6,6 +6,7 @@ import type {
   WCSState,
   ConnectData,
   ModalData,
+  WalletId,
 } from '../../../types';
 import {
   CONNECTION_TYPES,
@@ -76,6 +77,18 @@ export const createConnector = ({
     const connectionEXP = state.connectionTimeout + connectionEST;
     const data = payload.params[0];
     const { accounts, peerMeta: peer } = data;
+    const { walletAppId: initialWalletAppId } = getState();
+    // For redirect flow, wallet app id is initially figure_web, but they may connect with a mobile or extension wallet on the page, so we need to update it
+    const isConnectPageRedirectFlow =
+      initialWalletAppId === 'figure_web_connect_page';
+    const walletAppId: WalletId = ((isConnectPageRedirectFlow, isTest) => {
+      if (isConnectPageRedirectFlow) {
+        if (!peer) return isTest ? 'figure_mobile_test' : 'figure_mobile';
+        if (peer?.url?.indexOf('extension') > -1) return 'figure_extension';
+        if (peer?.url) return isTest ? 'figure_web_test' : 'figure_web';
+      }
+      return initialWalletAppId!;
+    })(isConnectPageRedirectFlow, initialWalletAppId === 'figure_web_test');
     const {
       address,
       jwt: signedJWT,
@@ -83,7 +96,6 @@ export const createConnector = ({
       representedGroupPolicy,
       walletInfo,
     } = getAccountInfo(accounts);
-    console.log('createConnect.onConnect() called');
     setState({
       address,
       connectionEST,
@@ -94,6 +106,7 @@ export const createConnector = ({
       representedGroupPolicy,
       signedJWT,
       walletInfo,
+      walletAppId,
     });
     broadcast(WINDOW_MESSAGES.CONNECTED, {
       data: {
@@ -103,9 +116,8 @@ export const createConnector = ({
       },
     });
     startConnectionTimer();
-    const { walletAppId } = getState();
     if (walletAppId)
-      sendWalletEvent(walletAppId, WALLET_APP_EVENTS.CONNECT, {
+      sendWalletEvent(initialWalletAppId!, WALLET_APP_EVENTS.CONNECT, {
         address,
         walletInfo,
         signedJWT,

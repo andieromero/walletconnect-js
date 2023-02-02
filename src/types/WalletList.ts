@@ -12,7 +12,8 @@ export type WalletId =
   | 'figure_mobile'
   | 'figure_mobile_test'
   | 'figure_web_test'
-  | 'figure_mobile_test';
+  | 'figure_mobile_test'
+  | 'figure_web_connect_page';
 export type WalletIcons = 'provenance' | 'figure';
 
 export type WalletEventData =

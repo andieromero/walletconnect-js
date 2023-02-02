@@ -73,3 +73,47 @@ export const webFigureTest = {
     }, 1000);
   },
 } as Wallet;
+
+export const webFigureConnectPage = {
+  dev: true,
+  id: 'figure_web_connect_page',
+  type: ['web', 'mobile'],
+  title: 'Figure Web Connect Page (Test)',
+  icon: 'figure',
+  eventAction: ({ uri, address, event, data, redirectUrl }) => {
+    // Build a full set of urlSearchParams to append to the url
+    const searchParams = new URLSearchParams();
+    if (uri) searchParams.append('wc', uri);
+    if (address) searchParams.append('address', address);
+    if (event) searchParams.append('event', event);
+    if (redirectUrl) searchParams.append('redirectUrl', redirectUrl);
+    const searchParamsString = searchParams.toString();
+    const url = `${FIGURE_WEB_WALLET_TEST_URL}${
+      searchParamsString ? `?${searchParamsString}` : ''
+    }`;
+    const width = 600;
+    const height = window.outerHeight < 750 ? window.outerHeight : 550;
+    const top = window.outerHeight / 2 + window.screenY - height / 2;
+    const left = window.outerWidth / 2 + window.screenX - width / 2;
+    const windowOptions = `popup=1 height=${height} width=${width} top=${top} left=${left} resizable=1, scrollbars=1, fullscreen=0, toolbar=0, menubar=0, status=1`;
+    // Redirect to Figure Connect page in new tab for connection requests
+    if (event === 'walletconnect_init') windowRef = window.open(url);
+    else if (
+      !(event === 'walletconnect_connect' || event === 'walletconnect_disconnect')
+    )
+      windowRef = window.open(url, undefined, windowOptions);
+
+    // Wait for wcjs to set walletconnect in storage and post back to figure connect page
+    setTimeout(() => {
+      if (window.localStorage.getItem('walletconnect'))
+        windowRef?.postMessage(
+          {
+            type: 'figureWebWalletSendMessage',
+            walletconnect: window.localStorage.getItem('walletconnect'),
+            data,
+          },
+          '*'
+        );
+    }, 1000);
+  },
+} as Wallet;

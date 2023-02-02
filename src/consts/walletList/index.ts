@@ -5,7 +5,7 @@ import {
   mobileProvenance,
   mobileProvenanceTest,
 } from './mobile';
-import { webFigure, webFigureTest } from './web';
+import { webFigure, webFigureTest, webFigureConnectPage } from './web';
 
 export const WALLET_LIST = [
   extensionFigure,
@@ -16,4 +16,5 @@ export const WALLET_LIST = [
   mobileProvenanceTest,
   webFigure,
   webFigureTest,
+  webFigureConnectPage,
 ];
