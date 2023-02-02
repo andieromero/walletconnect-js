@@ -37,7 +37,7 @@ export const signHexMessage = async ({
     method,
     params: [metadata],
   };
-  if (!connector || !walletAppId)
+  if (!connector)
     return { valid, data: hexMessage, request, error: 'No wallet connected' };
   // Check for a known wallet app with special callback functions
   const knownWalletApp = WALLET_LIST.find((wallet) => wallet.id === walletAppId);
@@ -49,7 +49,7 @@ export const signHexMessage = async ({
       knownWalletApp.eventAction(eventData);
     }
     // send message
-    const result = await connector.sendCustomRequest(request);
+    const result = (await connector.sendCustomRequest(request)) as string;
     // result is a hex encoded signature
     const signature = Uint8Array.from(Buffer.from(result, 'hex'));
     // un-hex the message to verify the signature (the wallet signs the un-hexed message)

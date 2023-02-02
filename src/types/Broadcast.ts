@@ -20,13 +20,13 @@ export interface MethodSendMessageData {
 
 export type ConnectionType = 'existing session' | 'new session';
 
-export type MethodConnectData =
-  | {
-      connectionEST: number;
-      connectionEXP: number;
-      connectionType: ConnectionType;
-    }
-  | ConnectData;
+interface BasicConnectData {
+  connectionEST: number;
+  connectionEXP: number;
+  connectionType: ConnectionType;
+}
+
+export type MethodConnectData = BasicConnectData | ConnectData;
 
 export interface MethodSignJWTData {
   signedJWT?: string;
@@ -56,12 +56,48 @@ type BroadcastResultData =
   | number
   | string;
 
+interface TxEvent {
+  type: string;
+  attributesList: {
+    key: string;
+    value: string;
+    index?: boolean;
+  }[];
+}
+interface TxLog {
+  msgIndex: number;
+  log: string;
+  eventsList: {
+    type: string;
+    attributesList: TxEvent[];
+  };
+}
+interface TxResponse {
+  code: number;
+  codespace: string;
+  data: string;
+  eventsList: TxEvent[];
+  gasUsed: number;
+  gasWanted: number;
+  height: number;
+  info: string;
+  logsList: TxLog[];
+  rawLog: string;
+  timestamp: string;
+  txhash: string;
+}
+
+export interface SendMessageResult {
+  txResponse: TxResponse;
+}
+
+type BroadcastWCResult = SendMessageResult | BasicConnectData | string;
+
 export interface BroadcastResult {
   data?: BroadcastResultData;
   error?: string;
   request?: MethodRequest;
-  // result comes from walletconnect, can't change the "any" type
-  result?: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  result?: BroadcastWCResult;
   valid?: boolean;
 }
 

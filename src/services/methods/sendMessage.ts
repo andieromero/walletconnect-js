@@ -4,6 +4,7 @@ import type {
   MethodSendMessageData,
   WalletConnectClientType,
   WalletId,
+  SendMessageResult,
 } from '../../types';
 import { WALLET_LIST, WALLET_APP_EVENTS, PROVENANCE_METHODS } from '../../consts';
 import { rngNum } from '../../utils';
@@ -53,8 +54,7 @@ export const sendMessage = async ({
     method,
     params: [metadata],
   };
-  if (!connector || !walletAppId)
-    return { valid, data, request, error: 'No wallet connected' };
+  if (!connector) return { valid, data, request, error: 'No wallet connected' };
   // Check for a known wallet app with special callback functions
   const knownWalletApp = WALLET_LIST.find((wallet) => wallet.id === walletAppId);
 
@@ -72,12 +72,15 @@ export const sendMessage = async ({
       knownWalletApp.eventAction(eventData);
     }
     // send message
-    const result = await connector.sendCustomRequest(request);
-    // TODO verify transaction ID
-    valid = !!result;
+    const result = (await connector.sendCustomRequest(request)) as SendMessageResult;
+    // Check to see if we had an error in the txResponse
+    if (result && result.txResponse && result.txResponse.code) {
+      // Any code, other than 0, means there is a problem
+      valid = false;
+      return { valid, result, error: result.txResponse.rawLog, data, request };
+    }
 
-    // result is a hex encoded signature
-    return { valid, result, data, request };
+    return { valid: true, result, data, request };
   } catch (error) {
     return { valid, error: `${error}`, data, request };
   }
