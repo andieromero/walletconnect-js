@@ -28,11 +28,12 @@ export interface EventData {
   duration?: number;
   data?: WalletEventData;
   referral?: string;
+  redirectUrl?: string;
 }
 
 export interface Wallet {
   dev?: boolean; // Is this wallet still in development?  If true, QRCode modal won't render by default
-  dynamicUrl?: string; // The result of generateUrl, the dyanmic url for mobile users.
+  dynamicUrl?: string; // The result of generateUrl, the dynamic url for mobile users.
   eventAction?: (eventData: EventData) => void; // Callback function for every walletconnect-js method/action
   generateUrl?: (QRCodeUrl: string) => Promise<string>; // Function to generate a dynamic URL for mobile users
   icon?: WalletIcons; // Icon to display next to the wallet selection

@@ -33,7 +33,7 @@ export interface WCSState {
   representedGroupPolicy: MasterGroupPolicy | null;
 }
 
-type WCSSetStateParam = WCSState & { connector?: WalletConnectClient };
+export type WCSSetStateParam = WCSState & { connector?: WalletConnectClient };
 
 export type WCSSetState = (state: Partial<WCSSetStateParam>) => void;
 export type WCSSetFullState = (state: WCSState) => void;
