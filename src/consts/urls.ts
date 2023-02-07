@@ -25,8 +25,6 @@ export const APP_STORE_APPLE_FIGURE =
 
 // FIGURE WEB WALLET URLS
 export const FIGURE_WEB_WALLET_TEST_URL =
-  'http://localhost:3001/figure-wallet/connect';
-// export const FIGURE_WEB_WALLET_TEST_URL =
-//   'https://test.figure.com/figure-wallet/connect';
+  'https://test.figure.com/figure-wallet/connect';
 export const FIGURE_WEB_WALLET_PROD_URL =
   'https://www.figure.com/figure-wallet/connect';
