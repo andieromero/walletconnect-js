@@ -54,7 +54,8 @@ export const webFigureTest = {
     const left = window.outerWidth / 2 + window.screenX - width / 2;
     const windowOptions = `popup=1 height=${height} width=${width} top=${top} left=${left} resizable=1, scrollbars=1, fullscreen=0, toolbar=0, menubar=0, status=1`;
     // Redirect to Figure Connect page in new tab for connection requests
-    if (event === 'walletconnect_init') window.location.href = url;
+    if (event === 'walletconnect_init') window.open(url);
+    // if (event === 'walletconnect_init') window.location.href = url;
     // Only open popup for events (i.e. sign and tx) and not for session updates or connect events
     if (event === 'walletconnect_event') window.open(url, undefined, windowOptions);
   },
