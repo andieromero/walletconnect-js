@@ -27,7 +27,7 @@ const WalletConnectContextProvider: React.FC<Props> = ({
     ...walletConnectService.state,
   });
   const [initialLoad, setInitialLoad] = useState(true);
-  const { connectionTimeout, bridge, status } = walletConnectState;
+  const { status } = walletConnectState;
 
   // Auto-redirect was passed in.  Act on disconnected status
   useEffect(() => {
@@ -52,16 +52,15 @@ const WalletConnectContextProvider: React.FC<Props> = ({
   useEffect(() => {
     if (initialLoad) {
       setInitialLoad(false);
+      // Create event listener for localStorage changes
+      window.addEventListener(
+        'storage',
+        walletConnectService.handleLocalStorageChange
+      );
       // Whenever we change the react state, update the class state
-      walletConnectService.setStateUpdater(setWalletConnectState);
-      // Connection might already exist, attempt to resume session
-      if (status === 'pending') {
-        // ConnectionTimeout is saved in ms, the connect function takes it as seconds, so we need to convert
-        const duration = connectionTimeout ? connectionTimeout / 1000 : undefined;
-        walletConnectService.connect({ duration, bridge });
-      }
+      walletConnectService.setContextUpdater(setWalletConnectState);
     }
-  }, [initialLoad, bridge, connectionTimeout, walletConnectService, status]);
+  }, [initialLoad, walletConnectService]);
 
   return (
     <StateContext.Provider value={{ walletConnectService, walletConnectState }}>
